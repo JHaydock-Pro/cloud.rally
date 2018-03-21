@@ -1,0 +1,38 @@
+{% set flavor_name = flavor_name or "m1.tiny" %}
+{% set image_name = image_name or "ScientificLinux-7-NoGui" %}
+{
+    "VMTasks.dd_load_test": [
+        {
+            "args": {
+                "flavor": {
+                    "name": "{{flavor_name}}"
+                },
+                "image": {
+                    "name": "^{{image_name}}$"
+                },
+                "fixed_network": "public",
+                "force_delete": false,
+                "command": {
+                    "interpreter": "/bin/sh"
+                },
+                "username": "fedora"
+            },
+            "runner": {
+                "type": "constant",
+                "times": 10,
+                "concurrency": 2
+            },
+            "context": {
+                "users": {
+                    "tenants": 3,
+                    "users_per_tenant": 2
+                },
+                "network": {
+                }
+            },
+            "sla": {
+                "failure_rate": {"max": 0.0 }
+            }
+        }
+    ]
+}
