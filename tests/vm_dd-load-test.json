@@ -1,5 +1,16 @@
 {% set flavor_name = flavor_name or "m1.tiny" %}
 {% set image_name = image_name or "ScientificLinux-7-NoGui" %}
+
+{% if "ScientificLinux-7" in image_name %}
+  {% set username = username or "fedora" %}
+{% elif "ScientificLinux-6" in image_name %}
+  {% set username = username or "cloud-user" %}
+{% elif "Ubuntu" in image_name %}
+  {% set username = username or "ubuntu" %}
+{% else %}
+  {% set username = username or "nousername" %}
+{% endif %}
+
 {
     "VMTasks.dd_load_test": [
         {
@@ -15,7 +26,7 @@
                 "command": {
                     "interpreter": "/bin/sh"
                 },
-                "username": "fedora"
+                "username": "{{username}}"
             },
             "runner": {
                 "type": "constant",
