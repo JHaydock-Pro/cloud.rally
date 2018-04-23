@@ -1,8 +1,9 @@
-#!/bin/sh
+#!/bin/bash
+
 # Load server and output JSON results ready to be processed
 # by Rally scenario
 
-for ex in awk top grep free tr df dc dd gzip
+for ex in awk top grep free tr df dd gzip
 do
     if ! type ${ex} >/dev/null
     then
@@ -12,13 +13,13 @@ do
 done
 
 get_used_cpu_percent() {
-    echo 100 $(top -b -n 1 | grep -i CPU | head -n 1 | sed -e 's/,/, /g' | sed -e 's/%/ /g' | awk '{print $8}' | tr -d %) - p | dc
+    echo 100 $(top -b -n 1 | grep -i CPU | head -n 1 | sed -e 's/,/, /g' | sed -e 's/%/ /g' | awk '{print $8}' | tr -d %) | awk '{printf "%.2f \n", $1-$2}'
 }
 
 get_used_ram_percent() {
     local total=$(free | grep Mem: | awk '{print $2}')
-    local used=$(free | grep -- -/+\ buffers | awk '{print $3}')
-    echo ${used} 100 \* ${total} / p | dc
+    local used=$(free | grep Mem: | awk '{print $3}')
+    echo ${used} ${total} | awk '{printf "%.2f \n", ($1/$2)*100}'
 }
 
 get_used_disk_percent() {
@@ -73,6 +74,7 @@ EOF
 additive_dd() {
     local c=${1:-50} # Megabytes
     local file=/tmp/dd_test.img
+    rm ${file} ${file}.gz -f
     local write=$(get_seconds "dd if=/dev/urandom of=${file} bs=1M count=${c}")
     local read=$(get_seconds "dd if=${file} of=/dev/null bs=1M count=${c}")
     local gzip=$(get_seconds "gzip ${file}")

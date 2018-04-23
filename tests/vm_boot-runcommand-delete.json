@@ -12,7 +12,7 @@
 {% endif %}
 
 {
-    "VMTasks.dd_load_test": [
+    "VMTasks.boot_runcommand_delete": [
         {
             "args": {
                 "flavor": {
@@ -24,7 +24,8 @@
                 "fixed_network": "public",
                 "force_delete": false,
                 "command": {
-                    "interpreter": "/bin/sh"
+                    "interpreter": "/bin/bash",
+                    "script_file": "vm_instance_test-modified.sh"
                 },
                 "username": "{{username}}"
             },
@@ -42,7 +43,7 @@
                 }
             },
             "sla": {
-                "failure_rate": {"max": 0.0 }
+                "failure_rate": {"max": 10.0 }
             }
         }
     ]
