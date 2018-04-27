@@ -24,10 +24,9 @@ url = 'http://'+host+'/write?db='+database
 nowtime = time.localtime()
 
 #print nowtime
-print "Time: " + str(nowtime.tm_hour) + ":" + str(nowtime.tm_min) + "-" + str(nowtime.tm_mday) + "/" + str(nowtime.tm_mon) + "/" + str(nowtime.tm_year)
-print ""
+#print nowtime.tm_hour
 
-if nowtime.tm_hour >= 9 and nowtime.tm_hour <=16 and nowtime.tm_wday <= 4:
+if nowtime.tm_hour >= 9 and nowtime.tm_hour <=16:
     workhours = True
 else:
     workhours = False
@@ -53,6 +52,8 @@ if isinstance(data, dict):
         metrics.append(metric)
 else:
     for test in data:
+
+
 #        print test['key']['name']
         for result in test['result']:
             metric = {}
@@ -60,25 +61,28 @@ else:
             metric['measurement'] = test['key']['name']
 
             metric['fields']['success'] = 1
-
             for sla in test['sla']:
 #                print sla
+#                print sla['success']
                 if sla['success'] == False:
                    metric['fields']['success'] = 0
 
-            metric['fields']['timestamp'] = result['timestamp']
+#            print result['duration']
             metric['fields']['duration'] = result['duration']
-
+            #metrics.append(metric)
+            #print result['timestamp']
             for atomic_action in result['atomic_actions']:
                 metric['fields'][atomic_action] = result['atomic_actions'][atomic_action]
                 #print atomic_action + ' = ' + str(result['atomic_actions'][atomic_action])
- 
+
+            metric['fields']['timestamp'] = result['timestamp']
+
+            if test['key']['name'] == 'VMTasks.boot_runcommand_delete':
+                metric['fields']['image'] = '"' + test['key']['kw']['args']['image']['name'] + '"'
+
             metrics.append(metric)
-
-
-#print ""
-#print "Metrics"
 #print metrics
+
 
 json_metrics = []
 for metric in metrics:
@@ -89,27 +93,15 @@ for metric in metrics:
         datastring += metric['measurement'].replace('.','-')+',instance='+metric['tags']['instance']+',workhours='+str(workhours)
         datastring +=' '+field.replace('.','-')+'=' + str(metric['fields'][field])
         datastring += "\n"
+    datastring += "\n"
 
 datastring = datastring
 
-#print ""
-#print "JSON Metrics:"
-print json.dumps(json_metrics, indent=4, sort_keys=True)
+#print json_metrics
 
-#print ""
-#print "Datastring:"
-#print datastring
+print datastring
 
-#print ""
-#print "Request Url:"
+
 r = requests.post(url,data=datastring,auth=(username,password))
-#print r.text
-#print r
-
-print ""
-print "---"
-if ('"success": 0' not in json_metrics):
-  print "Pass"
-else:
-  print "Fail"
-
+print r.text
+print r

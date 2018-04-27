@@ -27,3 +27,38 @@
         }
     ]
 }
+template features/cloud/openstack/rally/neutron_create-and-list-floating-ips;
+
+include 'components/metaconfig/config';
+
+prefix '/software/components/metaconfig/services/{/etc/openstack-utils/rally.d/neutron_create-and-list-floating-ips.json}';
+'module' = 'json';
+'contents' = dict(
+    "NeutronNetworks.create_and_list_floating_ips", list(
+        {
+            "args", {
+                "floating_network", "External",
+                "floating_ip_args", {}
+            },
+            "runner", {
+                "type", "constant",
+                "times", 10,
+                "concurrency", 5
+            },
+            "context", {
+                "users", {
+                    "tenants", 2,
+                    "users_per_tenant", 3
+                },
+                "quotas", {
+                    "neutron", {
+                        "floatingip", -1
+                    }
+                }
+            },
+            "sla", {
+                "failure_rate", {"max", 0.0 }
+            }
+        }
+    ]
+}
