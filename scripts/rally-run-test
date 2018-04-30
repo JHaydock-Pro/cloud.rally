@@ -9,6 +9,7 @@ if [[ $rally_results_cmd == *'rally task results'* ]]
 then
     rally_task_id=`echo $rally_results_cmd | sed 's/rally task results//g' | sed 's/ //g'`
     echo "$rally_task_id"
+    mkdir -p /tmp/results
     rally_results_path="/tmp/results/$rally_task_id"
     echo $rally_results_path
     $rally_results_cmd > $rally_results_path;

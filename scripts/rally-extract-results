@@ -81,8 +81,8 @@ else:
                 metric['fields']['image'] = '"' + test['key']['kw']['args']['image']['name'] + '"'
 
             metrics.append(metric)
-#print metrics
 
+#print metrics
 
 json_metrics = []
 for metric in metrics:
@@ -93,11 +93,10 @@ for metric in metrics:
         datastring += metric['measurement'].replace('.','-')+',instance='+metric['tags']['instance']+',workhours='+str(workhours)
         datastring +=' '+field.replace('.','-')+'=' + str(metric['fields'][field])
         datastring += "\n"
-    datastring += "\n"
 
 datastring = datastring
 
-#print json_metrics
+print json.dumps(json_metrics, indent=4, sort_keys=True)
 
 print datastring
 
